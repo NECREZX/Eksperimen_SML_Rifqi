@@ -1,0 +1,39 @@
+name: Data Preprocessing Workflow
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'churn_raw/**'
+      - 'preprocessing/automate_Rifqi.py'
+      - '.github/workflows/preprocessing.yml'
+
+jobs:
+  preprocess:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Data Preprocessing
+        run: |
+          cd preprocessing
+          python automate_Rifqi.py
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add preprocessing/churn_preprocessing/churn_processed.csv
+          git commit -m "Auto-update processed data" || echo "No changes to commit"
+          git push
